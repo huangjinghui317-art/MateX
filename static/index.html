@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MateX | Fifth Paradigm Matter R&D Copilot</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
+</head>
+<body>
+  <div id="splash" class="splash">
+    <div class="splash-line horizontal"></div>
+    <div class="splash-line vertical"></div>
+    <div class="splash-dots"></div>
+    <img class="splash-logo" src="/static/matex_logo.png" alt="MateX" />
+    <div class="splash-word">MateX</div>
+    <div class="splash-sub">第五范式驱动的新物质研发搭档</div>
+  </div>
+
+  <div class="app">
+    <aside class="side-rail" id="sideRail">
+      <div class="rail-brand">
+        <img src="/static/matex_logo.png" alt="MateX" />
+        <span>MateX</span>
+      </div>
+      <nav class="rail-nav">
+        <button class="rail-item active" data-view="explore" title="Materials Explore"><span class="ico">◇</span><span class="label">Materials Explore</span></button>
+        <button class="rail-item" data-view="design" title="Materials Design"><span class="ico">✦</span><span class="label">Materials Design</span></button>
+        <button class="rail-item" data-view="evaluate" title="Materials Evaluation"><span class="ico">△</span><span class="label">Materials Evaluation</span></button>
+        <button class="rail-item" data-view="literature" title="Literature Reading"><span class="ico">▤</span><span class="label">Literature Reading</span></button>
+        <button class="rail-item" data-view="render" title="Materials Render"><span class="ico">◫</span><span class="label">Materials Render</span></button>
+      </nav>
+      <div class="rail-foot">
+        <span class="ico">⌁</span><span class="label" id="backendState">API</span>
+      </div>
+    </aside>
+
+    <header class="top-nav">
+      <div class="nav-left">
+        <div class="product-name">MateX</div>
+        <div class="product-subtitle">Fifth Paradigm Matter R&D Copilot</div>
+      </div>
+      <div class="nav-center">
+        <span class="nav-pill active">Workspace</span>
+        <span class="nav-pill">Dataset</span>
+        <span class="nav-pill">Screening</span>
+      </div>
+      <div class="nav-right">
+        <button class="nav-action">Messages</button>
+        <button class="nav-action">API</button>
+        <div class="dropdown">
+          <button class="nav-action">About ▾</button>
+          <div class="dropdown-menu">
+            <span>Fifth Paradigm</span>
+            <span>Materials Copilot</span>
+            <span>AI4Science Workflow</span>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="user-btn">JH ▾</button>
+          <div class="dropdown-menu right">
+            <span>Profile</span>
+            <span>API Keys</span>
+            <span>Settings</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section id="view-explore" class="view active">
+        <div class="hero-search">
+          <div class="hero-copy">
+            <div class="kicker">Materials Explore</div>
+            <h1>Search, inspect and select candidate materials.</h1>
+            <p>Support element combination, formula and Materials Project ID. Results are shown as research cards instead of terminal-style text.</p>
+          </div>
+          <div class="search-card">
+            <div class="tab-line">
+              <button class="mini-tab active">Materials</button>
+              <button class="mini-tab disabled">Molecules</button>
+              <button class="mini-tab disabled">Proteins</button>
+            </div>
+            <div class="search-row">
+              <input id="searchInput" placeholder="e.g. Li-Fe or Li,Fe or Li3Fe or mp-19017" value="" />
+              <button class="circle-help" title="Formula / element / mp-id supported">?</button>
+              <button class="chart-btn" title="Open statistics">▥</button>
+              <button id="searchBtn" class="search-btn">Search</button>
+            </div>
+            <div class="selected-strip">
+              <span>Selected</span>
+              <div id="selectedElements" class="selected-elements"></div>
+              <button id="clearElements" class="text-btn">Clear</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="explore-grid">
+          <section class="periodic-panel panel-flat">
+            <div class="panel-head">
+              <div>
+                <h2>Element Filter</h2>
+                <p>Choose filter mode and click elements in the periodic table.</p>
+              </div>
+              <div class="class-switch">
+                <button data-class="all" class="class-btn active">All</button>
+                <button data-class="inorganic" class="class-btn">Inorganic</button>
+                <button data-class="organic" class="class-btn">Organic</button>
+              </div>
+            </div>
+            <div class="mode-tabs">
+              <button data-mode="only" class="mode-btn active">Only Elements</button>
+              <button data-mode="atleast" class="mode-btn">At Least Elements</button>
+              <button data-mode="formula" class="mode-btn">Formula</button>
+            </div>
+            <div class="periodic-wrap">
+              <div id="periodicTable" class="periodic-table"></div>
+            </div>
+            <div class="legend">
+              <span><i class="cat alkali"></i>Alkali</span><span><i class="cat alkaline"></i>Alkaline</span><span><i class="cat transition"></i>Transition</span><span><i class="cat lanthanide"></i>Rare earth</span><span><i class="cat nonmetal"></i>Nonmetal</span><span><i class="cat halogen"></i>Halogen</span><span><i class="cat noble"></i>Noble gas</span>
+            </div>
+          </section>
+
+          <section class="results-panel panel-flat">
+            <div class="panel-head results-head">
+              <div>
+                <h2>Results</h2>
+                <p id="resultCount">全部的 6 条结果</p>
+              </div>
+              <select id="sortSelect">
+                <option value="stable">Sort: Stable first</option>
+                <option value="gap">Sort: Band gap</option>
+                <option value="density">Sort: Density</option>
+              </select>
+            </div>
+            <div id="materialGrid" class="material-grid"></div>
+          </section>
+        </div>
+
+      </section>
+
+      <section id="view-detail" class="view detail-view">
+        <section id="detailPanel" class="detail-panel panel-flat">
+          <div class="detail-head">
+            <div>
+              <div class="kicker">Material Detail</div>
+              <h2 id="detailTitle">--</h2>
+              <p id="detailSub">--</p>
+            </div>
+            <button id="closeDetail" class="secondary-btn">Back to Results</button>
+          </div>
+          <div class="detail-grid">
+            <div class="viewer-panel">
+              <div class="viewer-toolbar advanced-toolbar">
+                <div class="style-group">
+                  <button data-style="stick" class="view-style active">Stick</button>
+                  <button data-style="sphere" class="view-style">Sphere</button>
+                  <button data-style="line" class="view-style">Line</button>
+                  <button id="spinBtn" class="view-style">Auto Rotate</button>
+                </div>
+                <div class="viewer-control-grid">
+                  <label>Supercell
+                    <select id="supercellSelect">
+                      <option value="1,1,1">1 × 1 × 1</option>
+                      <option value="2,2,1">2 × 2 × 1</option>
+                      <option value="2,2,2">2 × 2 × 2</option>
+                      <option value="3,3,1">3 × 3 × 1</option>
+                      <option value="3,3,3">3 × 3 × 3</option>
+                    </select>
+                  </label>
+                  <label>Atom Scale
+                    <input id="viewerAtomScale" type="range" min="12" max="42" value="22">
+                  </label>
+                  <label>Bond Radius
+                    <input id="viewerStickRadius" type="range" min="4" max="24" value="12">
+                  </label>
+                  <label>Background
+                    <select id="viewerBg">
+                      <option value="#f1f5f8">Light Grey</option>
+                      <option value="#ffffff">White</option>
+                      <option value="#e8eef3">Scientific Blue Grey</option>
+                      <option value="#0e1822">Dark Lab</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <div id="viewer3d" class="viewer3d"></div>
+            </div>
+            <div class="wyckoff-panel">
+              <div class="small-head">Hofmann / Wyckoff Projection</div>
+              <div id="detailRealHofmannGrid" class="real-hofmann-grid detail-real hidden"></div>
+              <div id="detailFallbackHofmannGrid" class="hofmann-grid detail">
+                <div><span>ab</span><svg id="detailTop" viewBox="0 0 320 230"></svg></div>
+                <div><span>ac</span><svg id="detailFront" viewBox="0 0 320 230"></svg></div>
+                <div><span>bc</span><svg id="detailSide" viewBox="0 0 320 230"></svg></div>
+              </div>
+            </div>
+          </div>
+          <div class="properties-layout">
+            <div id="propertyGroups" class="property-groups"></div>
+            <div class="chart-zone">
+              <div class="small-head">Realtime Charts</div>
+              <canvas id="radarChart" width="440" height="260"></canvas>
+              <canvas id="barChart" width="440" height="210"></canvas>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="view-design" class="view">
+        <div class="empty-feature">
+          <div class="empty-mark">✦</div>
+          <h2>Materials Design</h2>
+          <p>此功能尚未开放。后续可接入 LoRA / vLLM / RAG / 微扰重塑 / 遗传迭代工作流。</p>
+        </div>
+      </section>
+
+      <section id="view-literature" class="view">
+        <div class="empty-feature">
+          <div class="empty-mark">▤</div>
+          <h2>Literature Reading</h2>
+          <p>此功能尚未开放。后续可接入论文解析、图表抽取、材料实体识别和实验条件抽取。</p>
+        </div>
+      </section>
+
+      <section id="view-render" class="view">
+        <div class="render-grid render-grid-v6">
+          <section class="panel-flat render-control-panel">
+            <div class="panel-head">
+              <div>
+                <h2>Materials Render</h2>
+                <p>Upload your own CIF or use the current material. Hofmann images are rendered by the previous Python Hofmann workflow when available.</p>
+              </div>
+            </div>
+
+            <div id="renderDropZone" class="drop-zone render-drop-zone">
+              <input id="renderCifInput" type="file" accept=".cif,.txt" />
+              <div class="drop-icon">◫</div>
+              <div class="drop-title">Upload CIF for Rendering</div>
+              <div class="drop-sub">After upload, MateX will parse the CIF and render both Hofmann views and 3D interaction.</div>
+            </div>
+            <div id="renderUploadState" class="upload-state">No CIF uploaded. You can also render the currently selected material.</div>
+
+            <div class="control-block">
+              <div class="small-head">Hofmann Parameters</div>
+              <div class="control-grid compact-controls">
+                <label>Zoom <input id="hofZoom" type="range" min="80" max="220" value="120"></label>
+                <label>Bond Scale <input id="hofBondScale" type="range" min="70" max="180" value="112"></label>
+                <div class="fixed-note">Perspective fixed at 0.0. Bonds use covalent-radius sum × scale, matching the previous Hofmann script.</div>
+              </div>
+            </div>
+
+            <div class="control-block">
+              <div class="small-head">Visual Effects</div>
+              <div class="control-grid compact-controls">
+                <label>Atom Size <input id="atomSize" type="range" min="3" max="18" value="9"></label>
+                <label>Bond Width <input id="bondWidth" type="range" min="1" max="8" value="3"></label>
+                <label>Projection Jitter <input id="jitter" type="range" min="0" max="12" value="3"></label>
+                <label>Image Contrast <input id="renderContrast" type="range" min="80" max="150" value="106"></label>
+                <label>Image Shadow <input id="renderShadow" type="range" min="0" max="60" value="18"></label>
+                <label>Palette
+                  <select id="palette">
+                    <option value="science">Grey / Blue / Black</option>
+                    <option value="mono">Mono Black</option>
+                    <option value="cyan">Blue Cyan Highlight</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div class="render-actions">
+              <button id="renderUploadBtn" class="search-btn wide-btn">Render Uploaded CIF</button>
+              <button id="rerenderBtn" class="secondary-btn wide-btn">Render Current Material</button>
+            </div>
+            <div id="renderProgress" class="progress hidden"><i></i></div>
+          </section>
+
+          <section class="panel-flat render-output-stack">
+            <div class="small-head">3D Interactive View</div>
+            <div class="render-3d-toolbar render-3d-toolbar-v6">
+              <select id="render3dStyle">
+                <option value="stick">Stick + Sphere</option>
+                <option value="sphere">Sphere</option>
+                <option value="line">Line</option>
+              </select>
+              <select id="render3dSupercell">
+                <option value="1,1,1">1 × 1 × 1</option>
+                <option value="2,2,1">2 × 2 × 1</option>
+                <option value="2,2,2">2 × 2 × 2</option>
+                <option value="3,3,1">3 × 3 × 1</option>
+                <option value="3,3,3">3 × 3 × 3</option>
+              </select>
+              <select id="render3dBg">
+                <option value="#f1f5f8">Light Grey</option>
+                <option value="#ffffff">White</option>
+                <option value="#e8eef3">Scientific Blue Grey</option>
+                <option value="#0e1822">Dark Lab</option>
+              </select>
+              <label class="inline-range">Atom <input id="render3dAtomScale" type="range" min="12" max="48" value="22"></label>
+              <label class="inline-range">Bond <input id="render3dBondRadius" type="range" min="4" max="28" value="12"></label>
+              <button id="renderSpinBtn" class="view-style">Auto Rotate</button>
+            </div>
+            <div id="renderViewer3d" class="viewer3d render-viewer3d"></div>
+
+            <div class="small-head render-hof-title">Hofmann Projection Views</div>
+            <div id="realHofmannGrid" class="real-hofmann-grid hidden"></div>
+            <div id="fallbackHofmannGrid" class="hofmann-grid render">
+              <div><span>Top</span><svg id="renderTop" viewBox="0 0 320 230"></svg></div>
+              <div><span>Front</span><svg id="renderFront" viewBox="0 0 320 230"></svg></div>
+              <div><span>Side</span><svg id="renderSide" viewBox="0 0 320 230"></svg></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="view-evaluate" class="view">
+        <div class="evaluate-grid">
+          <section class="panel-flat eval-upload">
+            <div class="panel-head">
+              <div>
+                <h2>Materials Evaluation</h2>
+                <p>Upload CIF, parse structure, then run CHGNet / MatterSim if installed.</p>
+              </div>
+            </div>
+            <div id="dropZone" class="drop-zone">
+              <input id="cifInput" type="file" accept=".cif,.txt" />
+              <div class="drop-icon">△</div>
+              <div class="drop-title">Drop CIF here or choose file</div>
+              <div class="drop-sub">No terminal text. Results will be arranged as property cards.</div>
+            </div>
+            <div id="evalUploadState" class="upload-state">No CIF uploaded.</div>
+            <button id="evalBtn" class="search-btn wide-btn">Start Evaluation</button>
+            <div id="evalProgress" class="progress hidden"><i></i></div>
+          </section>
+          <section class="panel-flat eval-result">
+            <div class="panel-head">
+              <div>
+                <h2>Predicted Properties</h2>
+                <p id="evalState">Waiting for CIF...</p>
+              </div>
+            </div>
+            <div id="evalCards" class="eval-cards"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
