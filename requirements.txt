@@ -7,12 +7,8 @@ ase>=3.22
 spglib>=2.4
 mp-api>=0.41
 numpy>=1.26
-# AI/material models used by Materials Evaluation:
 chgnet>=0.3.8
-# MatterSim is still optional because its package name / CUDA setup may vary by platform.
-# mattersim
-
-# Required by real Hofmann PNG rendering through render_mpl when hofmann is installed.
+mattersim
 matplotlib>=3.8
-# Optional: install your local / available hofmann package to enable exact previous Hofmann PNG output.
-# hofmann
+hofmann[pymatgen]>=0.20.0
+pillow>=10.0.0
